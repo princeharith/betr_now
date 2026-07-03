@@ -12,13 +12,13 @@ def calculate_shares(
     if side == "yes":
         new_pool_no = pool_no + amount
         new_pool_yes = k / new_pool_no
-        shares = pool_yes - new_pool_yes
+        shares = (pool_yes - new_pool_yes) + amount
         return shares, new_pool_yes, new_pool_no
 
     elif side == "no":
         new_pool_yes = pool_yes + amount
         new_pool_no = k / new_pool_yes
-        shares = pool_no - new_pool_no
+        shares = (pool_no - new_pool_no) + amount
         return shares, new_pool_yes, new_pool_no
 
     else:

@@ -34,6 +34,12 @@ class MarketCreate(BaseModel):
     # TODO: should a client be able to set starting pool sizes, or always default?
 
 
+class MarketResolve(BaseModel):
+    # Same Literal trick you used on BetCreate.side — rejects anything
+    # that isn't exactly "yes" or "no" before the route code ever runs.
+    outcome: Literal["yes", "no"]
+
+
 class MarketResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -44,6 +50,7 @@ class MarketResponse(BaseModel):
     status: str
     pool_yes: float
     pool_no: float
+    outcome: Optional[str] = None
     resolve_at: Optional[datetime]
     created_at: datetime
     # TODO: want to include computed yes_price/no_price here too? (not a DB column —

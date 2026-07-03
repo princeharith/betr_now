@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import CheckConstraint, ForeignKey, String, UniqueConstraint, func
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, String, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -16,7 +16,7 @@ class User(Base):
     username: Mapped[str] = mapped_column(String(50), unique=True, index=True)
     display_name: Mapped[str] = mapped_column(String(100))
     balance: Mapped[float] = mapped_column(default=100)  # TODO: starting balance for new users?
-    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
 class Market(Base):
@@ -30,8 +30,12 @@ class Market(Base):
     pool_yes: Mapped[float] = mapped_column(default=100)  # TODO: starting AMM pool size?
     pool_no: Mapped[float] = mapped_column(default=100)
     k: Mapped[float] = mapped_column()  # TODO: how is k derived from pool_yes/pool_no?
-    resolve_at: Mapped[Optional[datetime]] = mapped_column()
-    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    # Which side won: "yes" or "no". Stays NULL while the market is open —
+    # it only gets set at resolution time, which is why it's Optional here
+    # unlike Bet.side/Position.side.
+    outcome: Mapped[Optional[str]] = mapped_column(String(3))
+    resolve_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
 class Bet(Base):
@@ -46,7 +50,7 @@ class Bet(Base):
     amount: Mapped[float] = mapped_column()
     shares: Mapped[float] = mapped_column()
     price: Mapped[float] = mapped_column()
-    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
 class Position(Base):
