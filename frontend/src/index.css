@@ -1,0 +1,523 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+:root {
+  --bg: #0a0c12;
+  --card: rgba(255, 255, 255, 0.03);
+  --card-border: rgba(255, 255, 255, 0.07);
+  --card-hover: rgba(255, 255, 255, 0.11);
+  --text: #e8eaf0;
+  --text-dim: #8b93a7;
+  --green: #34d399;
+  --green-dim: rgba(52, 211, 153, 0.12);
+  --red: #fb7185;
+  --red-dim: rgba(251, 113, 133, 0.12);
+  --accent: #34d399;
+  --radius: 16px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse 60% 40% at 15% -10%, rgba(52, 211, 153, 0.09), transparent),
+    radial-gradient(ellipse 50% 35% at 90% 0%, rgba(99, 102, 241, 0.08), transparent);
+  background-attachment: fixed;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+.layout {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 28px 20px 60px;
+}
+
+/* ---------- header ---------- */
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+h1 {
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(90deg, #e8eaf0, var(--green));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+h1::after {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-left: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 12px var(--green);
+  vertical-align: middle;
+}
+
+h2 {
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  margin-bottom: 14px;
+  color: var(--text-dim);
+}
+
+h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--text-dim);
+}
+
+.user-picker {
+  display: flex;
+  gap: 8px;
+}
+
+/* ---------- inputs & buttons ---------- */
+
+select,
+input {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--card-border);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 0.88rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+select:focus,
+input:focus {
+  border-color: rgba(52, 211, 153, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+input::placeholder {
+  color: #565e70;
+}
+
+button {
+  background: var(--green);
+  border: none;
+  color: #04110b;
+  border-radius: 10px;
+  padding: 9px 16px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s, opacity 0.12s;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(52, 211, 153, 0.25);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:disabled {
+  background: rgba(255, 255, 255, 0.07);
+  color: #565e70;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ---------- layout columns ---------- */
+
+.columns {
+  display: grid;
+  grid-template-columns: 1.05fr 1.35fr 0.75fr;
+  gap: 22px;
+}
+
+@media (max-width: 860px) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- cards ---------- */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 10px;
+  backdrop-filter: blur(12px);
+  transition: border-color 0.15s, transform 0.15s, background 0.15s;
+}
+
+.market-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 14px 16px;
+}
+
+.market-row:hover {
+  border-color: var(--card-hover);
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-1px);
+}
+
+.market-row.selected {
+  border-color: rgba(52, 211, 153, 0.55);
+  background: var(--green-dim);
+}
+
+.market-row span:first-child {
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.chip {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  padding: 4px 11px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--green);
+}
+
+.market-row.muted .chip {
+  color: var(--text-dim);
+}
+
+.new-market {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.new-market input {
+  flex: 1;
+}
+
+/* ---------- market detail ---------- */
+
+.detail {
+  padding: 22px;
+}
+
+.detail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.detail h2 {
+  color: var(--text);
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--green);
+  background: var(--green-dim);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  border-radius: 999px;
+  padding: 4px 10px;
+  flex-shrink: 0;
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5); }
+  50% { opacity: 0.6; box-shadow: 0 0 0 5px rgba(52, 211, 153, 0); }
+}
+
+/* ---------- odds ---------- */
+
+.odds {
+  display: flex;
+  gap: 12px;
+  margin: 20px 0 10px;
+}
+
+.odds-box {
+  flex: 1;
+  text-align: center;
+  padding: 18px 10px 14px;
+  border-radius: 14px;
+  border: 1.5px solid var(--card-border);
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.12s;
+}
+
+.odds-box:hover {
+  transform: translateY(-2px);
+}
+
+.odds-box.yes:hover,
+.odds-box.active.yes {
+  border-color: var(--green);
+  background: var(--green-dim);
+}
+
+.odds-box.no:hover,
+.odds-box.active.no {
+  border-color: var(--red);
+  background: var(--red-dim);
+}
+
+.odds-box.yes .odds-value {
+  color: var(--green);
+}
+
+.odds-box.no .odds-value {
+  color: var(--red);
+}
+
+.odds-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+
+.odds-value {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* probability bar — width transition is what makes live updates visible */
+.prob-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--red-dim);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.prob-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #10b981, var(--green));
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- bet controls ---------- */
+
+.bet-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.bet-row input {
+  width: 100px;
+  font-variant-numeric: tabular-nums;
+}
+
+.bet-btn {
+  flex: 1;
+  padding: 12px;
+  font-size: 0.95rem;
+}
+
+.resolve-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-top: 14px;
+  border-top: 1px solid var(--card-border);
+}
+
+.resolve-row button {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  padding: 7px 12px;
+}
+
+.resolve-row button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  box-shadow: none;
+}
+
+/* ---------- misc ---------- */
+
+.pos-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.86rem;
+  padding: 7px 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- leaderboard ---------- */
+
+.leaderboard {
+  padding: 6px 0;
+}
+
+.lb-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  font-size: 0.88rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background 0.12s;
+}
+
+.lb-row:last-child {
+  border-bottom: none;
+}
+
+.lb-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.lb-row.me {
+  background: var(--green-dim);
+  box-shadow: inset 2px 0 0 var(--green);
+}
+
+.lb-name {
+  flex: 1;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lb-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.25;
+}
+
+.lb-balance {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.lb-delta {
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.lb-delta.up { color: var(--green); }
+.lb-delta.down { color: var(--red); }
+
+.rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-dim);
+}
+
+.rank.r1 { background: rgba(250, 204, 21, 0.16); color: #facc15; }
+.rank.r2 { background: rgba(203, 213, 225, 0.13); color: #cbd5e1; }
+.rank.r3 { background: rgba(217, 119, 6, 0.16); color: #d97706; }
+
+.muted {
+  color: var(--text-dim);
+  font-size: 0.88rem;
+}
+
+.error {
+  color: var(--red);
+  background: var(--red-dim);
+  border: 1px solid rgba(251, 113, 133, 0.25);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.86rem;
+  margin: 10px 0;
+}
+
+.receipt {
+  color: var(--green);
+  background: var(--green-dim);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.86rem;
+  margin-top: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.resolved-banner {
+  text-align: center;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.resolved-banner strong {
+  color: var(--text);
+}
+
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
