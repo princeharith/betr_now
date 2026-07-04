@@ -43,6 +43,7 @@ export const placeBet = (userId, marketId, side, amount) =>
 
 export const getPositions = (userId) => request(`/positions/${userId}`);
 export const getLeaderboard = () => request("/leaderboard");
+export const getSettlement = () => request("/settlement");
 
 // The WebSocket endpoint from app/api/websocket.py — ws:// not http://.
 export const marketOddsUrl = (marketId) =>

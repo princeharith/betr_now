@@ -5,6 +5,7 @@ import {
   getLeaderboard,
   getMarkets,
   getPositions,
+  getSettlement,
   getUsers,
 } from "./api";
 import MarketDetail from "./MarketDetail";
@@ -16,6 +17,7 @@ export default function App() {
   const [selectedId, setSelectedId] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
   const [positions, setPositions] = useState([]);
+  const [settlement, setSettlement] = useState({ payments: [], open_markets: 0 });
   const [newUsername, setNewUsername] = useState("");
   const [newMarketTitle, setNewMarketTitle] = useState("");
   const [error, setError] = useState(null);
@@ -23,14 +25,16 @@ export default function App() {
   // One refresh function that re-pulls everything. Passed down to
   // MarketDetail so a bet/resolve there updates balances everywhere.
   const refresh = useCallback(async () => {
-    const [u, m, lb] = await Promise.all([
+    const [u, m, lb, s] = await Promise.all([
       getUsers(),
       getMarkets(),
       getLeaderboard(),
+      getSettlement(),
     ]);
     setUsers(u);
     setMarkets(m);
     setLeaderboard(lb);
+    setSettlement(s);
   }, []);
 
   useEffect(() => {
@@ -209,6 +213,35 @@ export default function App() {
             })}
             {leaderboard.length === 0 && (
               <p className="empty">No players yet.</p>
+            )}
+          </div>
+
+          <h2 style={{ marginTop: 24 }}>Settle up</h2>
+          <div className="card leaderboard">
+            {settlement.payments.map((p, i) => {
+              const mine =
+                currentUser &&
+                (p.from_username === currentUser.username ||
+                  p.to_username === currentUser.username);
+              return (
+                <div key={i} className={`lb-row ${mine ? "me" : ""}`}>
+                  <span className="lb-name">
+                    {p.from_username} <span className="pay-arrow">→</span>{" "}
+                    {p.to_username}
+                  </span>
+                  <span className="lb-balance">${p.amount.toFixed(2)}</span>
+                </div>
+              );
+            })}
+            {settlement.payments.length === 0 && (
+              <p className="empty">All square — nothing owed.</p>
+            )}
+            {settlement.open_markets > 0 && (
+              <p className="settle-note">
+                {settlement.open_markets} market
+                {settlement.open_markets > 1 ? "s" : ""} still open — amounts
+                will change
+              </p>
             )}
           </div>
         </div>

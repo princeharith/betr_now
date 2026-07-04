@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 
-from app.api import bets, markets, users, websocket
+from app.api import bets, markets, settlement, users, websocket
 from app.services.kafka_producer import start_producer, stop_producer
 
 
@@ -43,6 +43,7 @@ app.include_router(users.router)
 app.include_router(markets.router)
 app.include_router(bets.router)
 app.include_router(websocket.router)
+app.include_router(settlement.router)
 
 # Auto-instruments every route with request count/latency metrics and exposes
 # them at GET /metrics, in the format Prometheus expects to scrape.

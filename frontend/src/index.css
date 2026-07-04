@@ -475,6 +475,20 @@ button:disabled {
 .rank.r2 { background: rgba(203, 213, 225, 0.13); color: #cbd5e1; }
 .rank.r3 { background: rgba(217, 119, 6, 0.16); color: #d97706; }
 
+.pay-arrow {
+  color: var(--green);
+  font-weight: 700;
+  margin: 0 2px;
+}
+
+.settle-note {
+  padding: 9px 16px;
+  font-size: 0.76rem;
+  color: #facc15;
+  background: rgba(250, 204, 21, 0.07);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
 .muted {
   color: var(--text-dim);
   font-size: 0.88rem;

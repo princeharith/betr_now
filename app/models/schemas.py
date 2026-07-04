@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional, Literal
+from typing import List, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -77,6 +77,19 @@ class BetResponse(BaseModel):
     shares: float
     price: float
     created_at: datetime
+
+
+# ---------- Settlement ----------
+
+class SettlementPayment(BaseModel):
+    from_username: str
+    to_username: str
+    amount: float
+
+
+class SettlementResponse(BaseModel):
+    payments: List[SettlementPayment]
+    open_markets: int  # >0 means these numbers will still change
 
 
 # ---------- Position ----------
