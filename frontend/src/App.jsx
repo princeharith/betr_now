@@ -140,6 +140,12 @@ export default function App() {
               </button>
             </div>
           )}
+          {currentUser && (
+            <p className="muted" style={{ marginTop: -6, marginBottom: 12, fontSize: "0.76rem" }}>
+              Creating a market stakes $10 of your balance as liquidity — you
+              get the pool&apos;s remainder back when it resolves.
+            </p>
+          )}
           {openMarkets.map(marketRow)}
           {openMarkets.length === 0 && (
             <p className="empty">No open markets — create one.</p>

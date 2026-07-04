@@ -31,7 +31,10 @@ class MarketCreate(BaseModel):
     description: Optional[str] = None
     creator_id: int
     resolve_at: Optional[datetime] = None
-    # TODO: should a client be able to set starting pool sizes, or always default?
+    # Liquidity the creator stakes to seed the pools: seed dollars mint
+    # (seed, seed) starting pools. Bigger seed = deeper market = odds move
+    # less per bet. The creator gets the pool's residual back at resolution.
+    seed: float = Field(default=10, gt=0)
 
 
 class MarketResolve(BaseModel):

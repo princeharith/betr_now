@@ -9,31 +9,43 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.models.models import Market, Position, User
 from app.models.schemas import MarketCreate, MarketResolve, MarketResponse
+from app.services.redis_service import cache_odds
 
 router = APIRouter(prefix="/markets", tags=["markets"])
 
 
 @router.post("", response_model=MarketResponse)
 async def create_market(payload: MarketCreate, db: AsyncSession = Depends(get_db)) -> Market:
-    # The Market model's pool_yes/pool_no columns already default to 100 at
-    # the DB level — but we need concrete numbers *here* in Python to compute
-    # k, since k has no column default (recall from models.py: it's derived,
-    # not independent). So set them explicitly rather than relying on the
-    # column default, so both pools and k stay consistent with each other.
-    pool_yes = 100  # TODO: what starting value? (hint: match the column default)
-    pool_no = 100
+    # The creator is the liquidity provider: their seed money is staked and
+    # mints the starting pools ($1 per YES+NO pair, so seed dollars -> a
+    # (seed, seed) pool). They get the pool's residual back at resolution —
+    # profiting on balanced/wrong crowds, losing when the crowd bets right.
+    creator = await db.get(User, payload.creator_id)
+    if creator is None:
+        raise HTTPException(status_code=404, detail="Creator not found")
+    if creator.balance < payload.seed:
+        raise HTTPException(
+            status_code=400, detail="Insufficient balance to seed market liquidity"
+        )
+    creator.balance -= payload.seed
 
     market = Market(
         title=payload.title,
         description=payload.description,
         creator_id=payload.creator_id,
-        pool_yes=pool_yes,
-        pool_no=pool_no,
-        k=pool_yes*pool_no,  # TODO: derive this from pool_yes/pool_no
+        pool_yes=payload.seed,
+        pool_no=payload.seed,
+        k=payload.seed * payload.seed,
         resolve_at=payload.resolve_at,
     )
     db.add(market)
-    await db.flush()  # TODO: why do we need this? (same reason as create_user in users.py)
+    await db.flush()
+
+    # Initialize the Redis odds cache at 50/50. Equal pools are always 50/50,
+    # and this overwrites any stale entry left under a recycled market id
+    # (e.g. after a dev DB reset that didn't also flush Redis).
+    await cache_odds(market.id, 0.5, 0.5)
+
     return market
 
 
@@ -82,5 +94,13 @@ async def resolve_market(
     for position in winning_positions:
         user = await db.get(User, position.user_id)
         user.balance += position.shares  # shares × $1 per share
+
+    # LP payout: the pool still holds inventory on both sides. The winning
+    # side's shares pay $1 each, straight back to the creator who staked the
+    # seed; the losing side's are worthless. This is what makes the whole
+    # game zero-sum among real players — the "house" P&L lands on the LP.
+    creator = await db.get(User, market.creator_id)
+    residual = market.pool_yes if payload.outcome == "yes" else market.pool_no
+    creator.balance += residual
 
     return market
